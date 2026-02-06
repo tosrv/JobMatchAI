@@ -4,6 +4,7 @@ import { Camera, ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import TagInput from "@/components/dashboard/TagInput";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -15,10 +16,28 @@ export default function ProfilePage() {
   );
   const [fullname, setFullname] = useState("");
   const [email, setEmail] = useState("");
-  const [bio, setBio] = useState("");
+  // const [bio, setBio] = useState("");
+  const [skills, setSkills] = useState<string[]>([]);
+  const [experience, setExperience] = useState<string[]>([]);
+  const [education, setEducation] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<any>(null);
+
+  const parseArray = (value: any): string[] => {
+    if (Array.isArray(value)) return value;
+
+    if (typeof value === "string") {
+      try {
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+
+    return [];
+  };
 
   // Fetch current user info
   useEffect(() => {
@@ -31,7 +50,19 @@ export default function ProfilePage() {
         setAvatarUrl((user.user_metadata as any)?.avatar_url || avatarUrl);
         setFullname((user.user_metadata as any)?.display_name || "");
         setEmail(user.email || "");
-        setBio((user.user_metadata as any)?.bio || "");
+      }
+
+      const { data } = await supabase
+        .from("cvs")
+        .select("skills, experience, education")
+        .eq("user_id", user?.id);
+
+      if (data && data.length > 0) {
+        const cv = data[0];
+
+        setSkills(parseArray(cv.skills));
+        setExperience(parseArray(cv.experience));
+        setEducation(parseArray(cv.education));
       }
     };
     fetchUser();
@@ -80,12 +111,22 @@ export default function ProfilePage() {
       const { error: metadataError } = await supabase.auth.updateUser({
         data: {
           display_name: fullname,
-          bio,
           avatar_url: avatarPublicUrl,
         },
       });
 
       if (metadataError) throw metadataError;
+
+      const { error: cvError } = await supabase
+        .from("cvs")
+        .update({
+          skills,
+          experience,
+          education,
+        })
+        .eq("user_id", currentUser.id);
+
+      if (cvError) throw cvError;
 
       // Update email
       if (email && email !== currentUser.email) {
@@ -176,16 +217,15 @@ export default function ProfilePage() {
           />
         </label>
 
-        {/* Professional Bio */}
-        <label className="flex flex-col mb-5">
-          <span className="text-sm font-medium pb-2">Professional Bio</span>
-          <textarea
-            className="w-full rounded-lg border outline-none p-3 resize-none h-36"
-            placeholder="Briefly describe your experience and what you're looking for"
-            value={bio}
-            onChange={(e) => setBio(e.target.value)}
-          />
-        </label>
+        <TagInput label="Skills" tags={skills} setTags={setSkills} />
+
+        <TagInput
+          label="Experience"
+          tags={experience}
+          setTags={setExperience}
+        />
+
+        <TagInput label="Education" tags={education} setTags={setEducation} />
 
         {/* Save Button */}
         <div className="flex justify-center pb-20">
