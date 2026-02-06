@@ -75,7 +75,7 @@ http://localhost:3000
 
 ## 🚀 Live Demo
 
-You can try the app live here: [Job Match AI Demo](https://your-vercel-deploy-link.vercel.app)
+You can try the app live here: [Job Match AI Demo](https://job-match-ai.vercel.app)
 
 ## 🧠 How AI Matching Works
 
