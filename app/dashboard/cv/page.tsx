@@ -55,24 +55,33 @@ export default function UploadCVPage() {
   };
 
   useEffect(() => {
+    if (!user) return;
     const supabase = createClient();
 
-    const fetchCV = async () => {
-      if (!user) return;
-
-      const { data } = await supabase
+    const fetchLatestCV = async () => {
+      const { data: files, error: listError } = await supabase.storage
         .from("cvs")
-        .select("file_url")
-        .eq("user_id", user.id)
-        .maybeSingle();
+        .list(`${user.id}`, {
+          limit: 1,
+          sortBy: { column: "created_at", order: "desc" },
+        });
 
-      if (data?.file_url) {
-        setUrl(data.file_url);
+      if (listError) {
+        console.error(listError);
+        return;
+      }
+
+      if (files && files.length > 0) {
+        const { data } = supabase.storage
+          .from("cvs")
+          .getPublicUrl(`${user.id}/${files[0].name}`);
+
+        setUrl(data.publicUrl);
       }
     };
 
-    fetchCV();
-  }, []);
+    fetchLatestCV();
+  }, [user]);
 
   return (
     <div className="flex flex-col justify-center items-center h-screen w-full p-5">
