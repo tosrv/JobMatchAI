@@ -1,34 +1,34 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import Link from "next/link";
+import { Card } from "@/components/ui/card";
+import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export function LoginForm({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<"div">) {
+export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const router = useRouter();
+  const supabase = createClient();
+
+  useEffect(() => {
+    const checkSession = async () => {
+      await new Promise((res) => setTimeout(res, 50));
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (session) router.push("/dashboard");
+    };
+    checkSession();
+  }, []);
+
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const supabase = createClient();
     setIsLoading(true);
     setError(null);
 
@@ -37,74 +37,99 @@ export function LoginForm({
         email,
         password,
       });
+
       if (error) throw error;
-      // Update this route to redirect to an authenticated route. The user already has an active session.
-      router.push("/protected");
-    } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred");
+
+      router.push("/dashboard");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Login failed");
     } finally {
       setIsLoading(false);
     }
   };
 
+  const inputs = [
+    {
+      id: "email",
+      label: "Email",
+      type: "email",
+      placeholder: "you@example.com",
+      value: email,
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+        setEmail(e.target.value),
+    },
+    {
+      id: "password",
+      label: "Password",
+      type: "password",
+      placeholder: "Password",
+      value: password,
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+        setPassword(e.target.value),
+    },
+  ];
+
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
-          <CardDescription>
-            Enter your email below to login to your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleLogin}>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-              <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                  <Link
-                    href="/auth/forgot-password"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                  >
-                    Forgot your password?
-                  </Link>
-                </div>
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-              {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Logging in..." : "Login"}
-              </Button>
+    <div className="flex flex-col w-full justify-center items-center min-h-screen p-5 bg-gradient-to-br from-red-100/70 via-purple-50/50 to-blue-100/70">
+      {/* Header */}
+      <nav className="fixed top-0 pt-5 flex items-center justify-center gap-3 w-full py-1 backdrop-blur-3xl shadow-sm">
+        <span
+          className="fixed left-1 top-4 hover:cursor-pointer text-gray-500 hover:text-black"
+          onClick={() => router.push("/")}
+        >
+          <ChevronLeft />
+        </span>
+        <h2 className="font-semibold text-2xl">JobMatchAI</h2>
+      </nav>
+
+      {/* Title */}
+      <h3 className="text-4xl font-bold mt-20">Welcome Back</h3>
+      <p className="text-gray-500 mb-6">Log in to find your perfect match</p>
+
+      {/* Error */}
+      <div className="min-h-[24px] mb-2">
+        {error && <p className="text-red-500">{error}</p>}
+      </div>
+
+      {/* Card */}
+      <Card className="p-8 w-full max-w-md space-y-5">
+        <form onSubmit={handleLogin} className="space-y-5">
+          {inputs.map((inp) => (
+            <div key={inp.id} className="space-y-1">
+              <label htmlFor={inp.id}>{inp.label}</label>
+              <input
+                id={inp.id}
+                type={inp.type}
+                placeholder={inp.placeholder}
+                value={inp.value}
+                onChange={inp.onChange}
+                required
+                className="border outline-none h-10 rounded-lg px-3 w-full"
+              />
             </div>
-            <div className="mt-4 text-center text-sm">
-              Don&apos;t have an account?{" "}
-              <Link
-                href="/auth/sign-up"
-                className="underline underline-offset-4"
-              >
-                Sign up
-              </Link>
-            </div>
-          </form>
-        </CardContent>
+          ))}
+
+          <Button
+            type="submit"
+            className="w-full h-10 text-lg bg-blue-800 hover:bg-blue-600 active:bg-blue-800"
+            disabled={isLoading}
+          >
+            {isLoading ? "Logging in..." : "Login"}
+          </Button>
+        </form>
+
       </Card>
+
+      {/* Register */}
+      <p className="text-center mt-6">
+        Don&apos;t have an account?{" "}
+        <span
+          className="text-blue-500 font-semibold hover:text-black cursor-pointer"
+          onClick={() => router.push("/auth/sign-up")}
+        >
+          Sign Up
+        </span>
+      </p>
     </div>
   );
 }
