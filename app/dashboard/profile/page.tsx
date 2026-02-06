@@ -90,7 +90,7 @@ export default function ProfilePage() {
       // Update email
       if (email && email !== currentUser.email) {
         const res = await fetch("/api/update-email", {
-          method: "POST",
+          method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email }),
         });

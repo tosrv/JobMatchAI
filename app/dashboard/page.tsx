@@ -21,7 +21,7 @@ export default function DashPage() {
     <div className="flex flex-col items-center">
       <DashNav />
 
-      <div className="container pt-20 px-5 grid grid-rows-[auto] gap-10 min-h-screen">
+      <div className="container pt-20 px-5 grid grid-rows-[fit-content(100%)_auto_auto] gap-10 min-h-screen">
         <DashClient />
         <Recommendations />
         <SavedJobs />

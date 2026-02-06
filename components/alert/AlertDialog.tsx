@@ -85,6 +85,14 @@ export function JobAlertDialog({
       if (!error) {
         toast.success("Job alert updated successfully!");
         setOpen(false);
+        onSave?.({
+          ...alertData,
+          job_title: keyword,
+          location: country,
+          is_remote: remoteOnly,
+          frequency,
+          min_match_score: matchScore,
+        });
       }
     } else {
       // CREATE new alert
@@ -105,7 +113,7 @@ export function JobAlertDialog({
       if (!error && data) {
         toast.success("Job alert set up successfully!");
         setOpen(false);
-        onSave?.(data);
+        onSave?.(data); 
       }
     }
   };

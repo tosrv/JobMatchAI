@@ -4,15 +4,13 @@ import axios from "axios";
 export async function rankJobsWithGroq(parsedCV: CV, jobs: any[]) {
   if (!jobs.length) return [];
 
-  // Batasi agar Groq tidak overload
   const jobsToRank = jobs.slice(0, 30);
 
-  // Siapkan CV text (skills saja cukup untuk prescore style)
   const cvSkills = parsedCV.skills?.join(", ") || "";
   const cvExperience = parsedCV.experience?.join(", ") || "";
   const cvEducation = parsedCV.education?.join(", ") || "";
 
-  console.log(parsedCV, "ini cv yang ke groq");
+  console.log(parsedCV, "parsedCV");
 
   const cvText = `
 Skills: ${cvSkills}
@@ -20,7 +18,6 @@ Experience: ${cvExperience}
 Education: ${cvEducation}
   `.trim();
 
-  // Siapkan job descriptions untuk Groq, sertakan title juga
   const jobsText = jobsToRank
     .map(
       (job, i) =>

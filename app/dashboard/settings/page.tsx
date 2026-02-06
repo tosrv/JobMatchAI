@@ -73,6 +73,8 @@ export default function SettingsPage() {
     }
   };
 
+  const handleSave = () => {};
+
   const handleToggleAlert = async (alertId: string, currentStatus: boolean) => {
     try {
       const supabase = createClient();
@@ -91,14 +93,22 @@ export default function SettingsPage() {
           a.id === alertId ? { ...a, is_active: !currentStatus } : a,
         ),
       );
-
     } catch (err) {
       console.error(err);
     }
   };
 
-  const handleAlertSaved = (newAlert: Alerts) => {
-    setAlerts((prev) => [newAlert, ...prev]);
+  const handleSaveAlert = (newAlert: Alerts) => {
+    setAlerts((prev) => {
+      const exists = prev.find((a) => a.id === newAlert.id);
+      if (exists) {
+        // update alert yang sudah ada
+        return prev.map((a) => (a.id === newAlert.id ? newAlert : a));
+      } else {
+        // tambah alert baru
+        return [newAlert, ...prev];
+      }
+    });
   };
 
   return (
@@ -214,7 +224,7 @@ export default function SettingsPage() {
           open={alertOpen}
           setOpen={setAlertOpen}
           alertData={selectedAlert || undefined}
-          onSave={(newAlert) => setAlerts((prev) => [newAlert, ...prev])}
+          onSave={handleSaveAlert}
         />
       </div>
     </>
