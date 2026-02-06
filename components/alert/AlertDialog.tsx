@@ -123,7 +123,7 @@ export function JobAlertDialog({
       <Toaster position="top-center" reverseOrder={false} />
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-lg w-fit">
+        <DialogContent className="w-full md:w-fit">
           <DialogHeader>
             <DialogTitle className="text-xl font-extrabold tracking-tight text-center">
               Set Up Job Alert

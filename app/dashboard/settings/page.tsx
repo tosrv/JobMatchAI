@@ -131,7 +131,7 @@ export default function SettingsPage() {
             <section className="flex justify-end p-1">
               <button
                 onClick={() => setAlertOpen(true)}
-                className="bg-blue-500 rounded-full text-white font-semibold py-1 px-1 sm:px-3  hover:bg-blue-600 w-fit"
+                className="bg-blue-500 rounded-full text-white font-semibold py-1 px-1 md:px-3  hover:bg-blue-600 w-fit flex items-center"
               >
                 <span className="hidden md:inline">New Alert</span>
                 <PlusCircle className="inline md:hidden" />

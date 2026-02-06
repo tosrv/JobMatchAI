@@ -90,7 +90,7 @@ export default function LandingFooter() {
       <div className="w-full h-px bg-white/10 mb-8"></div>
 
       {/* Bottom */}
-      <div className="flex flex-col md:flex-row justify-between items-center w-full text-xs text-white/50 gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-center w-full text-xs text-white/50 gap-4 pb-5">
         <p>© 2026 JobMatchAI Inc. All rights reserved.</p>
         <div className="flex gap-6">
           <a className="hover:text-white transition-colors" href="#">

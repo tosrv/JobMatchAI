@@ -188,7 +188,7 @@ export default function ProfilePage() {
         </label>
 
         {/* Save Button */}
-        <div className="flex justify-center">
+        <div className="flex justify-center pb-20">
           <button
             type="submit"
             className="w-1/2 bg-blue-800 hover:bg-blue-500 active:bg-blue-800 text-white text-xl font-bold py-4 rounded-xl shadow-lg transition-colors"

@@ -72,7 +72,7 @@ export function LoginForm() {
   return (
     <div className="flex flex-col w-full justify-center items-center min-h-screen p-5 bg-gradient-to-br from-red-100/70 via-purple-50/50 to-blue-100/70">
       {/* Header */}
-      <nav className="fixed top-0 pt-5 flex items-center justify-center gap-3 w-full py-1 backdrop-blur-3xl shadow-sm">
+      <nav className="fixed top-0 pt-5 flex items-center justify-center gap-3 w-full py-1 backdrop-blur-3xl shadow-sm z-50">
         <span
           className="fixed left-1 top-4 hover:cursor-pointer text-gray-500 hover:text-black"
           onClick={() => router.push("/")}

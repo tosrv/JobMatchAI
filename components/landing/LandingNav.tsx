@@ -9,13 +9,13 @@ export default function LandingNav() {
   const [open, setOpen] = useState(false);
 
   const menu = [
-    { name: "Home", id: "home" },
-    { name: "How it Works", id: "how-it-works" },
-    { name: "Upload CV", id: "upload-cv" },
-    { name: "Why Us", id: "why-us" },
+    { name: "Home", id: "home", type: "scroll" },
+    { name: "How it Works", id: "how-it-works", type: "scroll" },
+    { name: "Upload CV", id: "upload-cv", type: "scroll" },
+    { name: "Why Us", id: "why-us", type: "scroll" },
     {
       name: "Sign In",
-      id: "sign-in",
+      type: "route",
       onclick: () => router.push("/auth/login"),
     },
   ];
@@ -28,18 +28,18 @@ export default function LandingNav() {
 
         {/* Desktop menu */}
         <ul className="hidden md:flex gap-8">
-          {menu.map((item) => (
-            <li key={item.id}>
+          {menu.map((item, i) => (
+            <li key={item.id ?? i}>
               <button
                 onClick={() => {
-                  if (item.onclick) {
-                    item.onclick();
+                  if (item.type === "route") {
+                    item.onclick?.();
                   } else {
-                    const el = document.getElementById(item.id);
+                    const el = document.getElementById(item.id!);
                     if (el) el.scrollIntoView({ behavior: "smooth" });
                   }
                 }}
-                className="text-white hover:text-gray-300 active:text-white transition-colors font-semibold cursor-pointer"
+                className="text-white hover:text-gray-300 font-semibold text-start"
               >
                 {item.name}
               </button>
@@ -59,15 +59,27 @@ export default function LandingNav() {
       {/* Mobile menu */}
       {open && (
         <ul className="md:hidden flex flex-col bg-white shadow-lg">
-          {menu.map((item) => (
-            <li key={item.id} className="border-b border-gray-200">
-              <a
-                href={`#${item.id}`}
-                className="block px-4 py-3 text-blue-600 hover:text-blue-800 font-semibold"
-                onClick={() => setOpen(false)} // close menu after click
-              >
-                {item.name}
-              </a>
+          {menu.map((item, i) => (
+            <li key={item.id ?? i} className="border-b border-gray-200">
+              {item.type === "route" ? (
+                <button
+                  onClick={() => {
+                    item.onclick?.();
+                    setOpen(false);
+                  }}
+                  className="w-full text-left px-4 py-3 text-blue-600 font-semibold"
+                >
+                  {item.name}
+                </button>
+              ) : (
+                <a
+                  href={`#${item.id}`}
+                  onClick={() => setOpen(false)}
+                  className="block px-4 py-3 text-blue-600 font-semibold text-start"
+                >
+                  {item.name}
+                </a>
+              )}
             </li>
           ))}
         </ul>
